@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # packages
     'raven.contrib.django.raven_compat',
+    'django_admin_lightweight_date_hierarchy',
     # project
     "DataCollector",
 ]
@@ -117,9 +118,15 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Europe/Berlin'
 USE_I18N = False
 USE_L10N = False
-USE_TZ = True
+USE_TZ = False
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(
+        BASE_DIR,
+        "static"
+    )
+]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_collect')
 
 # EMAIL
