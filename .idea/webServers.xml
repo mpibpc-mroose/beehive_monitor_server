@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="24558766-0c57-491c-bd1f-6d26246ba79a" name="1blu" url="https://waage.roose-in-berge.de">
+        <fileTransfer host="214639.webhosting47.1blu.de" port="22" rootFolder="/hp/bt/ab/mn/waage/beehive_monitor_server" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
