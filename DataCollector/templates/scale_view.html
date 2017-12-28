@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Rooses Stockwaage{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Letzte Messung</h4>
+                </div>
+                <div class="card-body">
+                    <h4>
+                        {{ latest_measurement.weight }}kg |
+                        {{ latest_measurement.temperature }}°C |
+                        {{ latest_measurement.humidity }}%rF
+                    </h4>
+                    <h6>{{ latest_measurement.timestamp|date:"d.m.Y H:i" }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Gewichts&auml;nderung</h4>
+                </div>
+                <div class="card-body">
+                    <h4>
+                        Tag: {% if weight_delta.day > 0 %}+ {% endif %}{{ weight_delta.day }} kg |
+                        Woche: {% if weight_delta.week > 0 %}+ {% endif %}{{ weight_delta.week }} kg |
+                        Monat: {% if weight_delta.month > 0 %}+ {% endif %}{{ weight_delta.month }} kg
+                    </h4>
+                    <h6>&emsp;</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <canvas id="chart"></canvas>
+    </div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'vendor/moment/moment.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+        var time_format = "HH:mm";
+        var weight_color = "#fec509";
+        var temp_color = "#126398";
+        var humidity_color = "#6fbd46";
+        var ctx = document.getElementById("chart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+        data: {
+            labels: [{% for measurement in measurements_today %}"{{ measurement.timestamp|date:"H:m" }}",{% endfor %}],
+            datasets: [{
+                label: "Gewicht",
+                fill: false,
+                borderColor: weight_color,
+                backgroundColor: "rgba(0,0,0,0.1)",
+                yAxisID: 'weight',
+                data: [{% for measurement in measurements_today %}{{ measurement.weight }}, {% endfor %}]
+            }, {
+                label: "Temperatur",
+                yAxisID: 'temp',
+                fill: false,
+                borderColor: temp_color,
+                backgroundColor: "rgba(0,0,0,0.1)",
+                data: [{% for measurement in measurements_today %}{{ measurement.temperature }}, {% endfor %}]
+            }, {
+                label: "Luftfeuchte",
+                yAxisID: 'humidity',
+                fill: false,
+                borderColor: humidity_color,
+                backgroundColor: "rgba(0,0,0,0.1)",
+                data: [{% for measurement in measurements_today %}{{ measurement.humidity }}, {% endfor %}]
+            }]
+        },
+            options: {
+                scales: {
+                    xAxes: [{
+						type: "time",
+						time: {
+							format: time_format
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Uhrzeit'
+						}
+					}],
+                    yAxes: [{
+                        id: 'weight',
+                        type: 'linear',
+                        position: 'left',
+                        ticks: {
+                          fontColor: weight_color,
+                          suggestedMin: 0,
+                          suggestedMax: 80,
+                          stepSize: 10
+                        }
+                        }, {
+                        id: 'temp',
+                        type: 'linear',
+                        position: 'right',
+                        ticks: {
+                          fontColor: temp_color,
+                          suggestedMin: 0,
+                          suggestedMax: 30,
+                          stepSize: 5
+                        }
+                        } , {
+                        id: 'humidity',
+                        type: 'linear',
+                        position: 'right',
+                        ticks: {
+                          fontColor: humidity_color,
+                          min: 40,
+                          max: 100,
+                          stepSize: 10
+                        }
+                        }]
+                }
+            }
+        });
+    </script>
+
+{% endblock %}

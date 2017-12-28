@@ -1,11 +1,12 @@
+from copy import deepcopy
+import datetime
 import json
-import uuid
 from statistics import median
+import uuid
 
 import pytz
-import datetime
 
-from copy import deepcopy
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse_lazy
 
@@ -17,6 +18,9 @@ from DataCollector.models import (
 
 class DataCollectorTestCase(TestCase):
     def setUp(self):
+        # as SQLite does otherwise not allow
+        # timezone aware dates
+        settings.USE_TZ = True
         self.scale = Scale.objects.create(
             name="Scale at home"
         )

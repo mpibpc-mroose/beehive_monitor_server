@@ -1,7 +1,11 @@
+import datetime
 import dateutil.parser
 import json
 import logging
-from statistics import median
+from statistics import (
+    median,
+    StatisticsError
+)
 
 from django.http import (
     HttpResponse,
@@ -10,11 +14,72 @@ from django.http import (
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 
+from braces.views import LoginRequiredMixin
 from DataCollector.models import Measurement, Scale
 
 logger = logging.getLogger(__name__)
+
+
+class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
+    template_name = "scale_view.html"
+
+    @staticmethod
+    def get_latest_measurement():
+        return Measurement.objects.latest("timestamp")
+
+    @staticmethod
+    def calculate_median_weight(measurements):
+        weights = list(measurement.weight for measurement in measurements)
+        try:
+            return median(weights)
+        except StatisticsError:
+            return 0
+
+    def get_weight_delta(self):
+        today_weight = self.calculate_median_weight(
+            Measurement.objects.filter(
+                timestamp__day=datetime.date.today().day,
+                timestamp__month=datetime.date.today().month,
+                timestamp__year=datetime.date.today().year,
+            )
+        )
+        yesterday_weight = self.calculate_median_weight(
+            Measurement.objects.filter(
+                timestamp__day=datetime.date.today().day - 1,
+                timestamp__month=datetime.date.today().month,
+                timestamp__year=datetime.date.today().year,
+            )
+        )
+        week_before_weight = self.calculate_median_weight(
+            Measurement.objects.filter(
+                timestamp__day=datetime.date.today().day - 7,
+                timestamp__month=datetime.date.today().month,
+                timestamp__year=datetime.date.today().year,
+            )
+        )
+        month_before_weight = self.calculate_median_weight(
+            Measurement.objects.filter(
+                timestamp__day=datetime.date.today().day - 30,
+                timestamp__month=datetime.date.today().month,
+                timestamp__year=datetime.date.today().year,
+            )
+        )
+        return {
+            "day": today_weight - yesterday_weight,
+            "week": today_weight - week_before_weight,
+            "month": today_weight - month_before_weight
+        }
+
+    def get_context_data(self, **kwargs):
+        context_data = super(BeeHiveScaleView, self).get_context_data(**kwargs)
+        context_data["latest_measurement"] = self.get_latest_measurement()
+        context_data["weight_delta"] = self.get_weight_delta()
+        context_data["measurements_today"] = Measurement.objects.filter(
+            timestamp__day=datetime.date.today().day
+        )
+        return context_data
 
 
 class DataCollectorFormView(View):
