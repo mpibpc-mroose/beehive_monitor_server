@@ -73,9 +73,9 @@ class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
             )
         )
         return {
-            "day": today_weight - yesterday_weight,
-            "week": today_weight - week_before_weight,
-            "month": today_weight - month_before_weight
+            "day": round(today_weight - yesterday_weight, 2),
+            "week": round(today_weight - week_before_weight, 2),
+            "month": round(today_weight - month_before_weight, 2)
         }
 
     def get_context_data(self, **kwargs):
