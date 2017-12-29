@@ -11,7 +11,7 @@ from django.http import (
     HttpResponse,
     HttpResponseBadRequest
 )
-from django.urls import reverse_lazy
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView
@@ -20,6 +20,12 @@ from braces.views import LoginRequiredMixin
 from DataCollector.models import Measurement, Scale
 
 logger = logging.getLogger(__name__)
+
+
+# IDEAS
+# graph for week / two weeks / a month (tabbed?)
+# (weight) measures with median on per day
+# graph scaling?
 
 
 class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
@@ -33,9 +39,9 @@ class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
     def calculate_median_weight(measurements):
         weights = list(measurement.weight for measurement in measurements)
         try:
-            return median(weights)
+            return float(round(median(weights), 2))
         except StatisticsError:
-            return 0
+            return float(0)
 
     def get_weight_delta(self):
         today_weight = self.calculate_median_weight(
