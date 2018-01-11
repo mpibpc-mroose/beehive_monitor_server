@@ -55,7 +55,7 @@
         var myChart = new Chart(ctx, {
             type: 'line',
         data: {
-            labels: [{% for measurement in measurements_today %}"{{ measurement.timestamp|date:"H:m" }}",{% endfor %}],
+            labels: [{% for measurement in measurements_today %}"{{ measurement.timestamp|date:"H:i" }}",{% endfor %}],
             datasets: [{
                 label: "Gewicht",
                 fill: false,
