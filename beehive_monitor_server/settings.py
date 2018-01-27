@@ -186,7 +186,8 @@ logging.config.dictConfig({
     },
 })
 
-
+LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/admin/login/"
 
 try:
     from beehive_monitor_server.local_settings import *
