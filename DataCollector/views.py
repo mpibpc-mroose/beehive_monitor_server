@@ -18,14 +18,9 @@ from django.views.generic import View, TemplateView
 
 from braces.views import LoginRequiredMixin
 from DataCollector.models import Measurement, Scale
+from DataCollector.plot import Plot
 
 logger = logging.getLogger(__name__)
-
-
-# IDEAS
-# graph for week / two weeks / a month (tabbed?)
-# (weight) measures with median on per day
-# graph scaling?
 
 
 class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
@@ -84,6 +79,12 @@ class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
         context_data["weight_delta"] = self.get_weight_delta()
         context_data["measurements_today"] = Measurement.objects.filter(
             timestamp__day=datetime.date.today().day
+        )
+        context_data["day_plot"] = Plot(
+            css_id="day_chart",
+            data=Measurement.objects.filter(
+                timestamp__gte=datetime.datetime.now() - datetime.timedelta(hours=120)
+            )
         )
         return context_data
 

@@ -8,6 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" media="screen">
     <link rel="stylesheet" href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" media="screen">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
 <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">

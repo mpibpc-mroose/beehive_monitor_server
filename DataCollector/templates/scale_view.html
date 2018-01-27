@@ -35,11 +35,9 @@
             </div>
         </div>
     </div>
-
     <div class="container">
-        <canvas id="chart"></canvas>
+        <canvas id="day_chart"></canvas>
     </div>
-
 
 {% endblock %}
 
@@ -47,84 +45,9 @@
     <script src="{% static 'vendor/moment/moment.min.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
     <script>
-        var time_format = "HH:mm";
-        var weight_color = "#fec509";
-        var temp_color = "#126398";
-        var humidity_color = "#6fbd46";
-        var ctx = document.getElementById("chart").getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'line',
-        data: {
-            labels: [{% for measurement in measurements_today %}"{{ measurement.timestamp|date:"H:i" }}",{% endfor %}],
-            datasets: [{
-                label: "Gewicht",
-                fill: false,
-                borderColor: weight_color,
-                backgroundColor: "rgba(0,0,0,0.1)",
-                yAxisID: 'weight',
-                data: [{% for measurement in measurements_today %}{{ measurement.weight }}, {% endfor %}]
-            }, {
-                label: "Temperatur",
-                yAxisID: 'temp',
-                fill: false,
-                borderColor: temp_color,
-                backgroundColor: "rgba(0,0,0,0.1)",
-                data: [{% for measurement in measurements_today %}{{ measurement.temperature }}, {% endfor %}]
-            }, {
-                label: "Luftfeuchte",
-                yAxisID: 'humidity',
-                fill: false,
-                borderColor: humidity_color,
-                backgroundColor: "rgba(0,0,0,0.1)",
-                data: [{% for measurement in measurements_today %}{{ measurement.humidity }}, {% endfor %}]
-            }]
-        },
-            options: {
-                scales: {
-                    xAxes: [{
-						type: "time",
-						time: {
-							format: time_format
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Uhrzeit'
-						}
-					}],
-                    yAxes: [{
-                        id: 'weight',
-                        type: 'linear',
-                        position: 'left',
-                        ticks: {
-                          fontColor: weight_color,
-                          suggestedMin: 0,
-                          suggestedMax: 80,
-                          stepSize: 10
-                        }
-                        }, {
-                        id: 'temp',
-                        type: 'linear',
-                        position: 'right',
-                        ticks: {
-                          fontColor: temp_color,
-                          suggestedMin: 0,
-                          suggestedMax: 30,
-                          stepSize: 5
-                        }
-                        } , {
-                        id: 'humidity',
-                        type: 'linear',
-                        position: 'right',
-                        ticks: {
-                          fontColor: humidity_color,
-                          min: 40,
-                          max: 100,
-                          stepSize: 10
-                        }
-                        }]
-                }
-            }
-        });
+        {% with day_plot as plot %}
+        {% include "plot/plot_template.js" %}
+        {% endwith %}
     </script>
 
 {% endblock %}
