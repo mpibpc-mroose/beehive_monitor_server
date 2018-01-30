@@ -1,5 +1,7 @@
 Django<2
 django-admin-lightweight-date-hierarchy
 django-braces
+pyOWM
 python-dateutil
 raven
+requests

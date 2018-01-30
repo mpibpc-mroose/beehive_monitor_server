@@ -137,3 +137,44 @@ class DataCollectorTestCase(TestCase):
             200,
             response.status_code
         )
+
+
+class OWMTestCase(TestCase):
+    def setUp(self):
+        self.scale = Scale.objects.create(
+            name="Foo"
+        )
+    def test_01_pressure(self):
+        from DataCollector.utils import Weather
+        weather = Weather()
+        pressure = weather.pressure
+        self.assertIsInstance(
+            pressure,
+            int,
+            "integer expected, got {0}".format(str(type(pressure)))
+        )
+        self.assertLessEqual(
+            pressure,
+            1050,
+            "pressure expected to be less than 1050, got {0}".format(pressure)
+
+        )
+        self.assertGreaterEqual(
+            pressure,
+            950,
+            "pressure expected to be greater than 950, got {0}".format(pressure)
+        )
+
+    def test_02_pressure_is_added_on_new_measurements(self):
+        new_measurement = Measurement.objects.create(
+            scale=self.scale,
+            timestamp=datetime.datetime.now(),
+            temperature=20,
+            humidity=60,
+            weight=50
+        )
+        new_measurement.save()
+        self.assertNotEqual(
+            1000,
+            Measurement.objects.get(pk=new_measurement.pk).pressure
+        )

@@ -5,6 +5,8 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
+from DataCollector.utils import Weather
+
 logger = logging.getLogger(__name__)
 
 
@@ -50,8 +52,21 @@ class Measurement(models.Model):
         verbose_name="weight"
     )
 
+    pressure = models.PositiveIntegerField(
+        verbose_name="Pressure",
+        default=1000
+    )
+
     def __str__(self):
         return "Measurement: {scale}@{timestamp}".format(
             scale=self.scale.name,
             timestamp=self.timestamp.isoformat()
         )
+
+
+@receiver(pre_save, sender=Measurement)
+def enrich_measurement_with_open_weather_data(**kwargs):
+    measurement = kwargs["instance"]
+    if measurement.pk is None:
+        w = Weather()
+        measurement.pressure = w.pressure

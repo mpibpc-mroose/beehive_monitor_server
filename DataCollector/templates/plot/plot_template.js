@@ -41,8 +41,9 @@ data: {
                 distribution: 'linear',
                 time: {
                     unit: "hour",
+                    stepSize: 6,
                     displayFormats: {
-                        day:	'D.MM.YYYY'
+                        hour: 'DD.M.YY-HH:mm'
                     }
                 },
                 scaleLabel: {

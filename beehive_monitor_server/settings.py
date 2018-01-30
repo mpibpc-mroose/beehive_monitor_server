@@ -189,6 +189,8 @@ logging.config.dictConfig({
 LOGIN_REDIRECT_URL = "/"
 LOGIN_URL = "/admin/login/"
 
+OPEN_WEATHER_MAPS_API_KEY = secrets.OPEN_WEATHER_MAPS_API_KEY
+
 try:
     from beehive_monitor_server.local_settings import *
 except ImportError:
