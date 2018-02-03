@@ -64,6 +64,47 @@ class Measurement(models.Model):
         )
 
 
+class MeasurementDayAggregation(models.Model):
+    date = models.DateField(
+        verbose_name="date",
+        unique=True
+    )
+    scale = models.ForeignKey(
+        Scale
+    )
+    weight_min = models.FloatField(
+        verbose_name="Weight (min.)"
+    )
+    weight_avg = models.FloatField(
+        verbose_name="Weight (avg.)"
+    )
+    weight_max = models.FloatField(
+        verbose_name="Weight (max.)"
+    )
+
+    temperature_min = models.SmallIntegerField(
+        verbose_name="Temperature (min.)"
+    )
+    temperature_avg = models.SmallIntegerField(
+        verbose_name="Temperature (avg.)"
+    )
+    temperature_max = models.SmallIntegerField(
+        verbose_name="Temperature (max.)"
+    )
+
+    humidity_min = models.SmallIntegerField(
+        verbose_name="Humidity (min.)"
+    )
+    humidity_avg = models.SmallIntegerField(
+        verbose_name="Humidity (avg.)"
+    )
+    humidity_max = models.SmallIntegerField(
+        verbose_name="Humidity (max.)"
+    )
+
+    def __str__(self):
+        return "Measurement Aggregation for {date}".format(date=self.date.strftime("%d.%m.%Y"))
+
 @receiver(pre_save, sender=Measurement)
 def enrich_measurement_with_open_weather_data(**kwargs):
     measurement = kwargs["instance"]

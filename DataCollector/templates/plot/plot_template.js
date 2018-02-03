@@ -59,7 +59,7 @@ data: {
                   fontColor: weight_color,
                   suggestedMin: {{ plot.scales.weight.min }},
                   suggestedMax: {{ plot.scales.weight.max }},
-                  stepSize: 2
+                  stepSize: 1
                 }
                 }, {
                 id: 'temp',

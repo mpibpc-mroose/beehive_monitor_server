@@ -4,7 +4,11 @@ from django.contrib.admin import (
     ModelAdmin
 )
 
-from DataCollector.models import Scale, Measurement
+from DataCollector.models import (
+    Scale,
+    Measurement,
+    MeasurementDayAggregation
+)
 
 
 @register(Scale)
@@ -23,4 +27,12 @@ class ScaleAdmin(ModelAdmin):
 class MeasurementAdmin(ModelAdmin):
     list_display = ["timestamp", "scale", "weight", "humidity", "temperature"]
     date_hierarchy = 'timestamp'
+    date_hierarchy_drilldown = True
+
+
+@register(MeasurementDayAggregation)
+class MeasurementAdmin(ModelAdmin):
+    list_display = ["date", "scale", "weight_avg", "temperature_min", "temperature_max",
+                    "humidity_min", "humidity_max"]
+    date_hierarchy = 'date'
     date_hierarchy_drilldown = True
