@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import RedirectView
 
-from DataCollector.views import BeeHiveScaleView
+from DataCollector.views import BeeHiveScaleView, AmChartView
 
 urlpatterns = [
     url(r"favicon.ico", RedirectView.as_view(url="static/icons/favicon.ico")),
@@ -14,7 +14,7 @@ urlpatterns = [
     ),
     url(
         regex="^$",
-        view=BeeHiveScaleView.as_view(),
+        view=AmChartView.as_view(),
         name="home"
     ),
 ]

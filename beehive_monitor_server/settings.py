@@ -142,7 +142,7 @@ RAVEN_CONFIG = {
 
 
 LOGGING_CONFIG = None
-LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
+LOGLEVEL = os.environ.get('LOGLEVEL', 'warning').upper()
 
 logging.config.dictConfig({
     'version': 1,

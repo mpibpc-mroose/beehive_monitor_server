@@ -1,3 +1,4 @@
+import logging
 from statistics import mean
 
 from django.core.management.base import BaseCommand, CommandError
@@ -8,6 +9,9 @@ from DataCollector.models import (
     Measurement,
     MeasurementDayAggregation
 )
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
 
 
 def get_available_dates():

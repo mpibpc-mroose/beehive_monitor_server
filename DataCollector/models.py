@@ -105,6 +105,7 @@ class MeasurementDayAggregation(models.Model):
     def __str__(self):
         return "Measurement Aggregation for {date}".format(date=self.date.strftime("%d.%m.%Y"))
 
+
 @receiver(pre_save, sender=Measurement)
 def enrich_measurement_with_open_weather_data(**kwargs):
     measurement = kwargs["instance"]
