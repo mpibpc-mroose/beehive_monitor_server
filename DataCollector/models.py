@@ -101,6 +101,11 @@ class MeasurementDayAggregation(models.Model):
     humidity_max = models.SmallIntegerField(
         verbose_name="Humidity (max.)"
     )
+    note = models.CharField(
+        verbose_name="Note",
+        max_length=20,
+        blank=True
+    )
 
     def __str__(self):
         return "Measurement Aggregation for {date}".format(date=self.date.strftime("%d.%m.%Y"))

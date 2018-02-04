@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Messwerttabelle{% endblock %}
+{% block content %}
+
+    <table class="table table-striped table-responsive-lg">
+        <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Gewicht</th>
+            <th>Temp.</th>
+            <th>Luftf.</th>
+            <th>Bemerk.</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for measure in measures %}
+            <tr>
+                <td>{{ measure.date|date:"d.m.Y" }}</td>
+                <td>
+                    {{ measure.weight_avg }}<br>
+                    <small>({{ measure.weight_min }} - {{ measure.weight_max }})</small>
+                </td>
+                <td>
+                    {{ measure.temperature_avg }}<br>
+                    <small>({{ measure.temperature_min }} - {{ measure.temperature_max }})</small>
+                </td>
+                <td>
+                    {{ measure.humidity_avg }}<br>
+                    <small>({{ measure.humidity_min }} - {{ measure.humidity_max }})</small>
+                </td>
+                <td>
+                    {{ measure.note }}
+                    {% if user.is_superuser %}
+                        <a role="button" class="btn btn-outline-warning btn-sm pull-right" href="{% url 'admin:DataCollector_measurementdayaggregation_change' measure.pk %}">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>{% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        $('#nav_table').addClass("active")
+    </script>
+{% endblock %}

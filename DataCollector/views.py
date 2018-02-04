@@ -13,11 +13,16 @@ from django.http import (
 )
 
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View, TemplateView
+from django.views.generic import View, TemplateView, ListView
 
 from braces.views import LoginRequiredMixin
-from DataCollector.models import Measurement, Scale
+from DataCollector.models import (
+    Scale,
+    Measurement,
+    MeasurementDayAggregation
+)
 from DataCollector.plot import Plot
 
 logger = logging.getLogger(__name__)
@@ -78,7 +83,9 @@ class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
         context_data["latest_measurement"] = self.get_latest_measurement()
         context_data["weight_delta"] = self.get_weight_delta()
         context_data["measurements_today"] = Measurement.objects.filter(
-            timestamp__day=datetime.date.today().day
+            timestamp__day=datetime.date.today().day,
+            timestamp__month=datetime.date.today().month,
+            timestamp__year=datetime.date.today().year,
         )
         context_data["day_plot"] = Plot(
             css_id="day_chart",
@@ -89,13 +96,66 @@ class BeeHiveScaleView(LoginRequiredMixin, TemplateView):
         return context_data
 
 
-class AmChartView(BeeHiveScaleView):
+class AmChartView(LoginRequiredMixin, TemplateView):
     template_name = "amplot.html"
+
+    @staticmethod
+    def get_latest_measurement():
+        return Measurement.objects.latest("timestamp")
+
+    @staticmethod
+    def calculate_median_weight(measurements):
+        weights = list(measurement.weight for measurement in measurements)
+        try:
+            return float(round(median(weights), 2))
+        except StatisticsError:
+            return float(0)
+
+    def get_twenty_four_hour_weight_average(self):
+        return self.calculate_median_weight(
+            Measurement.objects.filter(
+                timestamp__gte=now() - datetime.timedelta(hours=24)
+            )
+        )
+
+    def get_weight_diff(self, days_before):
+        try:
+            weight_in_past = MeasurementDayAggregation.objects.get(
+                date=(now() - datetime.timedelta(days=days_before)).date()
+            ).weight_avg
+        except MeasurementDayAggregation.DoesNotExist:
+            weight_in_past = MeasurementDayAggregation.objects.first().weight_avg
+
+        return round(
+            self.get_latest_measurement().weight - weight_in_past,
+            1
+        )
+
+    def get_weight_delta(self):
+
+        return {
+            "day": self.get_weight_diff(days_before=1),
+            "week": self.get_weight_diff(days_before=7),
+            "month": self.get_weight_diff(days_before=30)
+        }
 
     def get_context_data(self, **kwargs):
         context_data = super(AmChartView, self).get_context_data(**kwargs)
-        context_data["measurements"] = Measurement.objects.all()
+        context_data["latest_measurement"] = self.get_latest_measurement()
+        context_data["measurements"] = Measurement.objects.filter(
+            timestamp__gte=now() - datetime.timedelta(days=9)
+        )
+        context_data["weight_delta"] = self.get_weight_delta()
         return context_data
+
+
+class MeasurementTableView(LoginRequiredMixin, ListView):
+    model = MeasurementDayAggregation
+    template_name = "table.html"
+    context_object_name = "measures"
+
+    def get_queryset(self):
+        return super(MeasurementTableView, self).get_queryset().order_by("-date")
 
 
 class DataCollectorFormView(View):

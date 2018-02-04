@@ -32,7 +32,7 @@ class MeasurementAdmin(ModelAdmin):
 
 @register(MeasurementDayAggregation)
 class MeasurementAdmin(ModelAdmin):
-    list_display = ["date", "scale", "weight_avg", "temperature_min", "temperature_max",
-                    "humidity_min", "humidity_max"]
+    list_display = ["date", "scale", "weight_avg", "note"]
+    list_editable = ["note"]
     date_hierarchy = 'date'
     date_hierarchy_drilldown = True
