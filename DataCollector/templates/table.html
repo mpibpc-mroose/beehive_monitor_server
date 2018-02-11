@@ -9,6 +9,7 @@
             <th>Gewicht</th>
             <th>Temp.</th>
             <th>Luftf.</th>
+            <th>Regen</th>
             <th>Bemerk.</th>
         </tr>
         </thead>
@@ -29,9 +30,17 @@
                     <small>({{ measure.humidity_min }} - {{ measure.humidity_max }})</small>
                 </td>
                 <td>
+                    {{ measure.rain }}<br>
+                </td>
+
+                <td>
+                    {% if measure.icon %}
+                        <img class="img-thumbnail" src="{{ measure.icon|safe }}">
+                    {% endif %}
                     {{ measure.note }}
                     {% if user.is_superuser %}
-                        <a role="button" class="btn btn-outline-warning btn-sm pull-right" href="{% url 'admin:DataCollector_measurementdayaggregation_change' measure.pk %}">
+                        <a role="button" class="btn btn-outline-warning btn-sm pull-right"
+                           href="{% url 'admin:DataCollector_measurementdayaggregation_change' measure.pk %}">
                             <i class="fa fa-edit"></i>
                         </a>
                     {% endif %}
