@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 SECRET_KEY = secrets.SECRET_KEY
 DEBUG = False
 
-ALLOWED_HOSTS = ["waage.roose-in-berge.de", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["waage.roose-in-berge.de", "www.waage.roose-in-berge.de", "localhost", "127.0.0.1"]
 
 # Application definition
 
