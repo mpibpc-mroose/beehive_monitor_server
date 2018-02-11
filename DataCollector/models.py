@@ -101,6 +101,21 @@ class MeasurementDayAggregation(models.Model):
     humidity_max = models.SmallIntegerField(
         verbose_name="Humidity (max.)"
     )
+
+    rain = models.FloatField(
+        verbose_name="rain sum",
+        default=0.0
+    )
+    icon = models.URLField(
+        verbose_name="weather icon",
+        blank=True
+    )
+    apixiu_weather = models.TextField(
+        verbose_name="JSON from APIXIU",
+        blank=True,
+        help_text="for future use"
+    )
+
     note = models.CharField(
         verbose_name="Note",
         max_length=20,

@@ -1,6 +1,7 @@
 Django<2
 django-admin-lightweight-date-hierarchy
 django-braces
+pendulum
 pyOWM
 python-dateutil
 raven

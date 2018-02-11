@@ -1,7 +1,11 @@
+import requests
 from django.conf import settings
 
 from pyowm import OWM
 
+
+class ApixuWeatherException(Exception):
+    pass
 
 class Weather(object):
     def __init__(self, location="Göttingen,DE"):
@@ -13,3 +17,53 @@ class Weather(object):
     def pressure(self):
         return self.weather.get_pressure()['press']
 
+
+class ApixuWeather(object):
+    def __init__(self, api_key, location, year, month, day):
+        self.raw_weather = self._get_raw_weather(
+            api_key=api_key,
+            location=location,
+            year=year,
+            month=month,
+            day=day
+        )
+
+    def _get_raw_weather(self, api_key, location, year,month, day):
+        response = requests.get(
+            url="https://api.apixu.com/v1/history.json?key={api_key}&q={location}&dt={year}-{month}-{day}".format(
+                api_key=api_key,
+                location=location,
+                year=year,
+                month=month,
+                day=day
+            )
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise ApixuWeatherException("failed with status {status}".format(status=response.status_code))
+
+
+    @property
+    def day_weather_accumulation(self):
+        return self.raw_weather["forecast"]["forecastday"][0]["day"]
+
+    @property
+    def rain(self):
+        return self.day_weather_accumulation["totalprecip_mm"]
+
+    @property
+    def weather_icon(self):
+        return self.day_weather_accumulation["condition"]["icon"]
+
+if __name__ == '__main__':
+    w = ApixuWeather(
+        api_key="0efd0031822041e7a45113647181102",
+        location="Göttingen",
+        year=2018,
+        month=2,
+        day=11
+    )
+    print(w.rain)
+    print(w.weather_icon)
+    print(w.day_weather_accumulation)

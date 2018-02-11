@@ -1,13 +1,20 @@
+import pendulum
 import logging
 from statistics import mean
 
-from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
+from django.core.management.base import BaseCommand
 from django.db.models.functions import TruncDate
 
 from DataCollector.models import (
     Scale,
     Measurement,
     MeasurementDayAggregation
+)
+
+from DataCollector.utils import (
+    ApixuWeather,
+    ApixuWeatherException
 )
 
 logger = logging.getLogger(__name__)
@@ -52,6 +59,29 @@ class Command(BaseCommand):
     help = 'Aggregate measurements per day into MeasurementAggregation model'
     measurements = object
 
+    def _get_apixiu_weather(self):
+        """
+        get the weather accumulation for yesterday from APIXU
+        :return: tuple for day-JSON, rain and icon
+        """
+        yesterday = pendulum.yesterday()
+        json = ""
+        rain = 0.0
+        icon = ""
+        try:
+            w = ApixuWeather(
+                api_key=settings.APIXU_API_KEY,
+                location="Göttingen",
+                day=yesterday.day,
+                month=yesterday.month,
+                year=yesterday.year
+            )
+            return str(w.day_weather_accumulation), w.rain, w.weather_icon
+        except ApixuWeatherException as error:
+            logger.exception(error)
+            return json, rain, icon
+
+
     def _get_weight_aggregation(self):
         return round_aggregation(
             aggregate(
@@ -81,6 +111,7 @@ class Command(BaseCommand):
         weight_aggr = self._get_weight_aggregation()
         temperature_aggr = self._get_temperature_aggregation()
         humidity_aggr = self._get_humidity_aggregation()
+        apixu_raw, rain, icon = self._get_apixiu_weather()
         MeasurementDayAggregation.objects.create(
             date=day,
             scale=scale,
@@ -92,7 +123,10 @@ class Command(BaseCommand):
             temperature_min=temperature_aggr["min"],
             humidity_avg=humidity_aggr["avg"],
             humidity_max=humidity_aggr["max"],
-            humidity_min=humidity_aggr["min"]
+            humidity_min=humidity_aggr["min"],
+            rain=rain,
+            icon=icon,
+            apixiu_weather=apixu_raw
         )
 
     def handle(self, *args, **options):

@@ -34,5 +34,6 @@ class MeasurementAdmin(ModelAdmin):
 class MeasurementAdmin(ModelAdmin):
     list_display = ["date", "scale", "weight_avg", "note"]
     list_editable = ["note"]
+    readonly_fields = ["apixiu_weather"]
     date_hierarchy = 'date'
     date_hierarchy_drilldown = True
