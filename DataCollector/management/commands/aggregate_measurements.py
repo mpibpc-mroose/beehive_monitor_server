@@ -23,12 +23,13 @@ logger.setLevel(logging.WARNING)
 
 def get_available_dates():
     """
-    extract available dates from the Measurements
+    extract available dates (except today's date) from the Measurements
     :return:
     """
     available_dates = []
     for values in Measurement.objects.annotate(date=TruncDate("timestamp")).values("date").distinct():
-        available_dates.append(values["date"])
+        if values["date"] != pendulum.date.today():
+            available_dates.append(values["date"])
     return available_dates
 
 
@@ -80,7 +81,6 @@ class Command(BaseCommand):
         except ApixuWeatherException as error:
             logger.exception(error)
             return json, rain, icon
-
 
     def _get_weight_aggregation(self):
         return round_aggregation(
