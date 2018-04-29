@@ -47,14 +47,14 @@
         </div>
     </div>
     <div class="container">
-    <h4 style="margin-top: 1em;">Gewicht</h4>
-    <div id="weight_chart" class="amchart"></div>
-    <h4>Temperatur</h4>
-    <div id="temperature_chart" class="amchart"></div>
-    <h4>Luftfeuchte</h4>
-    <div id="humidity_chart" class="amchart"></div>
-    <h4>Luftdruck</h4>
-    <div id="preassure_chart" class="amchart"></div>
+        <h4 style="margin-top: 1em;">Gewicht</h4>
+        <div id="weight_chart" class="amchart"></div>
+        <h4>Temperatur</h4>
+        <div id="temperature_chart" class="amchart"></div>
+        <h4>Luftfeuchte</h4>
+        <div id="humidity_chart" class="amchart"></div>
+        <h4>Luftdruck</h4>
+        <div id="preassure_chart" class="amchart"></div>
     </div>
 {% endblock %}
 
@@ -311,6 +311,7 @@
                 "enabled": false
             }
         };
+
         var charts = [];
         charts.push(AmCharts.makeChart("weight_chart", weight_chart_config));
         charts.push(AmCharts.makeChart("temperature_chart", temperature_chart_config));
@@ -364,7 +365,7 @@
         }
 
         function zoomChart() {
-            weight_chart.zoomToIndexes(Math.round(weight_chart.dataProvider.length * 0.7), Math.round(weight_chart.dataProvider.length));
+            weight_chart.zoomToIndexes(Math.round(weight_chart.dataProvider.length * 0.85), Math.round(weight_chart.dataProvider.length));
         }
     </script>
 {% endblock %}
