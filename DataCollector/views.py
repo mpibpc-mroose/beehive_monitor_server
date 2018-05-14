@@ -7,17 +7,21 @@ from statistics import (
     StatisticsError
 )
 
+from django.db.models import (Min, Max)
+from django.db.models.functions import TruncDate
+
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest
 )
-
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View, TemplateView, ListView
 
 from braces.views import LoginRequiredMixin
+import pendulum
+
 from DataCollector.models import (
     Scale,
     Measurement,
@@ -118,6 +122,18 @@ class AmChartView(LoginRequiredMixin, TemplateView):
             )
         )
 
+    def get_day_diff(self):
+        """ maximum last day vs. latest measurement """
+        maximum_yesterday_weight = Measurement.objects.annotate(date=TruncDate("timestamp")) \
+            .filter(date=pendulum.yesterday()).aggregate(Max("weight"))
+        return round(self.get_latest_measurement().weight - maximum_yesterday_weight["weight__max"], 2)
+
+    def get_intra_day_diff(self):
+        """ minimum current day vs. latest measurement"""
+        minimum_today_weight = Measurement.objects.annotate(date=TruncDate("timestamp")) \
+            .filter(date=pendulum.today()).aggregate(Min("weight"))
+        return round(self.get_latest_measurement().weight - minimum_today_weight["weight__min"], 2)
+
     def get_weight_diff(self, days_before):
         try:
             weight_in_past = MeasurementDayAggregation.objects.get(
@@ -134,7 +150,8 @@ class AmChartView(LoginRequiredMixin, TemplateView):
     def get_weight_delta(self):
 
         return {
-            "day": self.get_weight_diff(days_before=1),
+            "day": self.get_day_diff(),
+            "intra_day": self.get_intra_day_diff(),
             "week": self.get_weight_diff(days_before=7),
             "month": self.get_weight_diff(days_before=30)
         }

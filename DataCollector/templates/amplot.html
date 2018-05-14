@@ -24,7 +24,6 @@
                         {{ latest_measurement.weight }}kg |
                         {{ latest_measurement.temperature }}°C |
                         {{ latest_measurement.humidity }}%rF |
-                        {{ latest_measurement.pressure }}hPa
                     </h4>
                     <h6>{{ latest_measurement.timestamp|date:"d.m.Y H:i" }}</h6>
                 </div>
@@ -37,9 +36,10 @@
                 </div>
                 <div class="card-body">
                     <h4>
-                        Tag: {% if weight_delta.day > 0 %}+ {% endif %}{{ weight_delta.day }} kg |
-                        Woche: {% if weight_delta.week > 0 %}+ {% endif %}{{ weight_delta.week }} kg |
-                        Monat: {% if weight_delta.month > 0 %}+ {% endif %}{{ weight_delta.month }} kg
+                        H: {% if weight_delta.intra_day > 0 %}+ {% endif %}{{ weight_delta.intra_day }} |
+                        G:{% if weight_delta.day > 0 %}+ {% endif %}{{ weight_delta.day }} kg |
+                        W: {% if weight_delta.week > 0 %}+ {% endif %}{{ weight_delta.week }} kg
+                        {% comment %}Monat: {% if weight_delta.month > 0 %}+ {% endif %}{{ weight_delta.month }} kg{% endcomment %}
                     </h4>
                     <h6>&emsp;</h6>
                 </div>
