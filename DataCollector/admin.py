@@ -26,6 +26,7 @@ class ScaleAdmin(ModelAdmin):
 @register(Measurement)
 class MeasurementAdmin(ModelAdmin):
     list_display = ["timestamp", "scale", "weight", "humidity", "temperature"]
+    list_editable = ["weight", "humidity", "temperature"]
     date_hierarchy = 'timestamp'
     date_hierarchy_drilldown = True
 
