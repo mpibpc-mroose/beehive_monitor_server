@@ -72,7 +72,7 @@ class Command(BaseCommand):
         try:
             w = ApixuWeather(
                 api_key=settings.APIXU_API_KEY,
-                location="Kassel",
+                location="Göttingen",
                 day=yesterday.day,
                 month=yesterday.month,
                 year=yesterday.year
