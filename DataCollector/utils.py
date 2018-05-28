@@ -13,7 +13,7 @@ class ApixuWeatherException(Exception):
 
 
 class Weather(object):
-    def __init__(self, location="Göttingen,DE"):
+    def __init__(self, location="Kassel,DE"):
         owm = OWM(settings.OPEN_WEATHER_MAPS_API_KEY)
         observation = owm.weather_at_place(location)
         self.weather = observation.get_weather()
@@ -58,7 +58,10 @@ class ApixuWeather(object):
 
     @property
     def day_weather_accumulation(self):
-        return self.raw_weather["forecast"]["forecastday"][0]["day"]
+        try:
+            return self.raw_weather["forecast"]["forecastday"][0]["day"]
+        except IndexError:
+            raise ApixuWeatherException("No Forecast in {raw_weather}".format(raw_weather=self.raw_weather))
 
     @property
     def rain(self):
@@ -72,11 +75,8 @@ class ApixuWeather(object):
 if __name__ == '__main__':
     w = ApixuWeather(
         api_key="0efd0031822041e7a45113647181102",
-        location="Göttingen",
+        location="Kassel",
         year=2018,
         month=2,
         day=11
     )
-    print(w.rain)
-    print(w.weather_icon)
-    print(w.day_weather_accumulation)

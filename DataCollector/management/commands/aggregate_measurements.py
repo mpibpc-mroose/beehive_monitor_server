@@ -72,12 +72,15 @@ class Command(BaseCommand):
         try:
             w = ApixuWeather(
                 api_key=settings.APIXU_API_KEY,
-                location="Göttingen",
+                location="Kassel",
                 day=yesterday.day,
                 month=yesterday.month,
                 year=yesterday.year
             )
-            return str(w.day_weather_accumulation), w.rain, w.weather_icon
+            try:
+                return str(w.day_weather_accumulation), w.rain, w.weather_icon
+            except ApixuWeatherException:
+                return "", 999, ""
         except ApixuWeatherException as error:
             logger.exception(error)
             return json, rain, icon
