@@ -12,10 +12,7 @@ from DataCollector.models import (
     MeasurementDayAggregation
 )
 
-from DataCollector.utils import (
-    ApixuWeather,
-    ApixuWeatherException
-)
+from DataCollector.utils import FakeApixuWeather, WeatherException
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -70,7 +67,7 @@ class Command(BaseCommand):
         rain = 0.0
         icon = ""
         try:
-            w = ApixuWeather(
+            w = FakeApixuWeather(
                 api_key=settings.APIXU_API_KEY,
                 location="Göttingen",
                 day=yesterday.day,
@@ -79,9 +76,9 @@ class Command(BaseCommand):
             )
             try:
                 return str(w.day_weather_accumulation), w.rain, w.weather_icon
-            except ApixuWeatherException:
+            except WeatherException:
                 return "", 999, ""
-        except ApixuWeatherException as error:
+        except WeatherException as error:
             logger.exception(error)
             return json, rain, icon
 

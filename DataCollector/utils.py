@@ -8,7 +8,7 @@ from pyowm import OWM
 logger = logging.getLogger(__name__)
 
 
-class ApixuWeatherException(Exception):
+class WeatherException(Exception):
     pass
 
 
@@ -51,7 +51,8 @@ class ApixuWeather(object):
             if status_code == 200:
                 return response.json()
             else:
-                logger.warning("Apixiu API request failed with status {status}, retry pending".format(status=status_code))
+                logger.warning(
+                    "Apixiu API request failed with status {status}, retry pending".format(status=status_code))
                 time.sleep(10)
 
         raise ApixuWeatherException("failed with status {status}".format(status=status_code))
@@ -61,7 +62,7 @@ class ApixuWeather(object):
         try:
             return self.raw_weather["forecast"]["forecastday"][0]["day"]
         except IndexError:
-            raise ApixuWeatherException("No Forecast in {raw_weather}".format(raw_weather=self.raw_weather))
+            raise WeatherException("No Forecast in {raw_weather}".format(raw_weather=self.raw_weather))
 
     @property
     def rain(self):
@@ -70,6 +71,16 @@ class ApixuWeather(object):
     @property
     def weather_icon(self):
         return self.day_weather_accumulation["condition"]["icon"]
+
+
+class FakeApixuWeather(ApixuWeather):
+    def day_weather_accumulation(self):
+        return {
+            "totalprecip_mm": -1.0,
+            "condition": {
+                "icon": "https://via.placeholder.com/100"
+            }
+        }
 
 
 if __name__ == '__main__':
