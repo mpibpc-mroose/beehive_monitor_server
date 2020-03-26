@@ -6,3 +6,5 @@ pyOWM
 python-dateutil
 raven
 requests
+# mysqlclient
+# flipflop
