@@ -25,7 +25,7 @@ def get_available_dates():
     """
     available_dates = []
     for values in Measurement.objects.annotate(date=TruncDate("timestamp")).values("date").distinct():
-        if values["date"] != pendulum.date.today():
+        if values["date"] != pendulum.today().date():
             available_dates.append(values["date"])
     return available_dates
 
